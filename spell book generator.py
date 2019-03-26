@@ -2,7 +2,7 @@ import random
 from spelllist_by_level import spelllist
 
 
-def getmaxspell(wizlevel):
+def get_max_spell(wizlevel):
     """ determine the highest level spells a wizard of level wizlevel would have access to"""
     spellarray = {}
     spelllevel = (wizlevel+1)//2
@@ -19,33 +19,35 @@ def getmaxspell(wizlevel):
         spellarray.update({level:round(magicmath)})
     return spellarray
 
-def getspells(number, level):
+def get_spells(number, level):
     """ return a list of spells, length number, of spell level level"""
     spells = []
     for i in range(number):
         choice = random.choice(spelllist[level])
-        #if the chosen spell is not in the list, add it
-        if choice not in spells:
-            spells.append(choice)
-        #if the spell is in the list, there is a chance of adding it as a personlized spell,
-        #otherwise will look for a new original spell of level
-        else:
-            random.choice([getspells(1,level),spells.append("Personalized {}".format(choice))])
-    return spells
+        try:
+            assert choice not in spells
+        except AssertionError:
+            while choice in spells:
+                if random.randint(1,2) == 1 and "{} PERSONAL".format(choice) in spells:
+                    choice = random.choice(spelllist[level])
+                else:
+                    choice = "{} PERSONAL".format(choice)
+        spells.append(choice)
+    return sorted(spells)
         
         
-def spellbook(wizlevel):
+def get_spellbook(wizlevel):
     """generate the actual spellbook"""
     spellbook = {}
-    spellarray = getmaxspell(wizlevel)
+    spellarray = get_max_spell(wizlevel)
     for key in spellarray:
         value = spellarray[key]
-        spellbook.update({key:getspells(value,key)})
+        spellbook.update({key:get_spells(value,key)})
     return(spellbook)
 
 while True:
     lev = input("What level wizard spellbook: ")
-    test = spellbook(int(lev))
+    test = get_spellbook(int(lev))
     for line in test:
-        print(line)
+        print("Level {} spells:".format(line))
         print(", ".join(test[line]))
