@@ -46,8 +46,18 @@ def get_spellbook(wizlevel):
     return(spellbook)
 
 while True:
-    lev = input("What level wizard spellbook: ")
-    test = get_spellbook(int(lev))
+    lev = int(input("What level wizard spellbook: "))
+    try:
+        assert lev <= 20
+    except AssertionError:
+        while lev >20:
+            lev = int(input("Wizard level cannot be more than 20: "))
+    try:
+        assert lev >= 1
+    except AssertionError:
+        while lev < 1:
+            lev = int(input("Wizard level cannot be less than 1: "))
+    test = get_spellbook(lev)
     for line in test:
         print("Level {} spells:".format(line))
         print(", ".join(test[line]))
